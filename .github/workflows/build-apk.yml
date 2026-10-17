@@ -107,7 +107,7 @@ jobs:
               shortcuts: [],
               additionalTrustedOrigins: [],
               retainedBundles: [],
-              minSdkVersion: 21,
+              minSdkVersion: 24,
               enableSiteSettingsShortcut: false
             };
             fs.writeFileSync("twa-manifest.json", JSON.stringify(m, null, 2));
