@@ -53,10 +53,7 @@ jobs:
           printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "$ANDROID_HOME" > ~/.bubblewrap/config.json
           cat ~/.bubblewrap/config.json
 
-      - name: Init TWA project from web manifest
-        run: printf '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' | bubblewrap init --manifest "${{ inputs.manifest_url }}" --directory .
-
-      - name: Apply app identity
+      - name: Write TWA manifest (no interactive init)
         env:
           APP_ID: ${{ inputs.app_id }}
           APP_NAME: ${{ inputs.app_name }}
@@ -65,17 +62,44 @@ jobs:
         run: |
           node -e '
             const fs = require("fs");
-            const m = JSON.parse(fs.readFileSync("twa-manifest.json", "utf8"));
-            const id = process.env.APP_ID;
-            m.packageId = "app.codesathi." + id;
-            m.name = process.env.APP_NAME.slice(0, 50);
-            m.launcherName = process.env.APP_NAME.slice(0, 12);
-            m.host = "codesathi.codesathi-app.workers.dev";
-            m.startUrl = process.env.START_URL;
-            m.webManifestUrl = process.env.MANIFEST_URL;
-            m.iconUrl = "https://codesathi.codesathi-app.workers.dev/icon-512.png";
-            m.maskableIconUrl = "https://codesathi.codesathi-app.workers.dev/icon-512-maskable.png";
-            m.signingKey = { path: "./android.keystore", alias: "codesathi" };
+            const H = "codesathi.codesathi-app.workers.dev";
+            const O = "https://" + H;
+            const name = process.env.APP_NAME.slice(0, 50);
+            const m = {
+              packageId: "app.codesathi." + process.env.APP_ID,
+              host: H,
+              name: name,
+              launcherName: name.slice(0, 12),
+              display: "standalone",
+              themeColor: "#0b1220",
+              themeColorDark: "#0b1220",
+              navigationColor: "#0b1220",
+              navigationColorDark: "#0b1220",
+              navigationDividerColor: "#0b1220",
+              navigationDividerColorDark: "#0b1220",
+              backgroundColor: "#0b1220",
+              enableNotifications: false,
+              startUrl: process.env.START_URL,
+              iconUrl: O + "/icon-512.png",
+              maskableIconUrl: O + "/icon-512-maskable.png",
+              appVersion: "1.0.0",
+              appVersionCode: 1,
+              signingKey: { path: "./android.keystore", alias: "codesathi" },
+              splashScreenFadeOutDuration: 300,
+              fallbackType: "customtabs",
+              features: {},
+              webManifestUrl: process.env.MANIFEST_URL,
+              fullScopeUrl: O + "/s/" + process.env.APP_ID,
+              orientation: "default",
+              generatorApp: "bubblewrap-cli",
+              isChromeOSOnly: false,
+              isMetaQuest: false,
+              shortcuts: [],
+              additionalTrustedOrigins: [],
+              retainedBundles: [],
+              minSdkVersion: 21,
+              enableSiteSettingsShortcut: false
+            };
             fs.writeFileSync("twa-manifest.json", JSON.stringify(m, null, 2));
           '
           cat twa-manifest.json
