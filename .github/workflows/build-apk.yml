@@ -32,7 +32,7 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Install Android SDK (cmdline-tools, build-tools 34, platform 34)
+      - name: Install Android SDK (cmdline-tools, build-tools 36.1.0)
         run: |
           set -euo pipefail
           export SDK="$HOME/android-sdk"
@@ -41,7 +41,8 @@ jobs:
           unzip -q /tmp/clt.zip -d "$SDK/cmdline-tools"
           mv "$SDK/cmdline-tools/cmdline-tools" "$SDK/cmdline-tools/latest"
           yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$SDK" --licenses >/dev/null || true
-          "$SDK/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$SDK" "platform-tools" "build-tools;34.0.0" "platforms;android-34" >/dev/null
+          "$SDK/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$SDK" "platform-tools" "build-tools;36.1.0" "platforms;android-36" >/dev/null
+          mkdir -p "$SDK/tools/bin"
           echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
           ls "$SDK"
 
